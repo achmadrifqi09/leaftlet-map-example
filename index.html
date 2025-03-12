@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaflet JS with GeoJSON from File</title>
+    <link rel="stylesheet" href="/src/css/leaftlet.css" />
+    <style>
+        .container{
+            max-width: 60vw;
+            margin: 0 auto;
+        }
+        #map {
+            width: 80%;
+            height: 600px;
+            border-radius: 8px;
+        }
+        .leaflet-control-attribution{
+            opacity: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div id="map"></div>
+    </div>
+
+    <script src="/src/js/leaflet.js"></script>
+    <script>
+        const map = L.map('map').setView([-6.2088, 106.8456], 11);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+
+        const storeIcon = L.icon({
+            iconUrl: '/src/icon/shop.png',
+            iconSize: [40, 40], 
+            iconAnchor: [16, 40], 
+            popupAnchor: [0, -40] 
+        });
+
+        // fake fetching marker
+        setTimeout(() => {  
+            const marker1 = L.marker([-6.2088, 106.8456], { icon: storeIcon }).addTo(map);
+            marker1.bindPopup("<b>Toko 1</b><br>Ini adalah toko pertama.");
+    
+            const marker2 = L.marker([-6.1995, 106.8175], { icon: storeIcon }).addTo(map);
+            marker2.bindPopup("<b>Toko 2</b><br>Ini adalah toko kedua.");
+        }, 1000)
+
+
+        const polygonStyle = {
+            color: 'red',
+            weight: 1,
+            opacity: 1,
+            fillColor: 'red',
+            fillOpacity: 0.08
+        };
+
+        fetch('/src/json/jakarta-geo.json')
+            .then(response => response.json())
+            .then(data => {
+                L.geoJSON(data, {
+                    style: polygonStyle
+                }).addTo(map);
+            })
+            .catch(error => {
+                console.error('Error loading the GeoJSON file:', error);
+            });
+    </script>
+</body>
+
+</html>
